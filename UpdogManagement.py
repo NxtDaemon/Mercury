@@ -1,4 +1,5 @@
 import json
+import os 
 
 # Written By NxtDaemon Any Issues or Additions you would like please contact me here https://nxtdaemon.xyz/contact
 #  __    __            __     _______
@@ -29,8 +30,6 @@ class Color:
     InfoColor = CYAN
     SuccessColor = GREEN
     NumColor = BLUE+BOLD
-    # x
-
 
 class Notify():
     'Managed what type of message is sent'
@@ -66,14 +65,22 @@ data = json.loads(data)
 Paths = data["Paths"]
 Config = data["Default Configuration"]
 
-
+Notify.Info("Enter '!' followed by the path for a custom location")
 for _ in enumerate(Paths):
     c = _[0]
     _ = _[1]
     OutputOpts(f"[{c}] : {_} -> {Paths[_]}")
+    
 
 try:
-    Response = Notify.Question("Enter the number you wish to serve up > ")
-    print(int(Response))
+    Response = Notify.Question("Enter the name of the location you wish to serve up > ")
+    if Response.startswith("!"):
+        Location = Notify.Question("Enter Custom Path > ")
+    else:
+        Location = Paths[Response]
+    
 except Exception as Err:
     Notify.Error(f"Error : {Err} was found")
+
+os.system(f"updog -d {Location} -p 80")
+print("x")
