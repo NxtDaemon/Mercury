@@ -1,0 +1,9 @@
+{
+    "Paths": {
+        "Path1" : "/opt/xyz",
+        "Path2" : "/opt/yyy"
+    },
+    "Default Configuration": {
+        "AdminMode":"1"
+    }
+}
