@@ -65,6 +65,7 @@ data = json.loads(data)
 Paths = data["Paths"]
 Config = data["Default Configuration"]
 
+# Print out all options and their keys 
 Notify.Info("Enter '!' followed by the path for a custom location")
 for _ in enumerate(Paths):
     c = _[0]
@@ -72,6 +73,7 @@ for _ in enumerate(Paths):
     OutputOpts(f"[{c}] : {_} -> {Paths[_]}")
     
 
+# Get the location of the Directory to serve up
 try:
     Response = Notify.Question("Enter the name of the location you wish to serve up > ")
     if Response.startswith("!"):
@@ -82,5 +84,5 @@ try:
 except Exception as Err:
     Notify.Error(f"Error : {Err} was found")
 
+# Serve files with updog
 os.system(f"updog -d {Location} -p 80")
-print("x")
