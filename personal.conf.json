@@ -1,0 +1,15 @@
+{
+    "Paths": {
+        "PEASS" : "/opt/PrivEsc/PEASS/",
+        "Sherlock" : "/opt/PrivEsc/Sherlock/",
+	"LinEnum" : "/opt/PrivEsc/LinEnum/",
+	"Powerless" : "/opt/PrivEsc/Powerless/",
+	"PowerSploit" : "/opt/PrivEsc/PowerSploit/",
+	"Seatbelt" : "/opt/PrivEsc/Seatbelt",
+	"PrivescCheck" : "/opt/PrivEsc/PrivescCheck/",
+	"WinEnum" : "/opt/PrivEsc/WinEnum"
+    },
+    "Default Configuration": {
+        "AdminMode":"1"
+    }
+}
