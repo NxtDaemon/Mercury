@@ -1,4 +1,10 @@
-# UpdogManagement Utility 
-Within messing around with HTB machines I often need to serve up WinPEAS or LinPEAS , etc etc <br>
-so within the mindset of typing very little I've made this little python script, if you would like to use it <br>
-all you need to do is to modify the conf.json file with the absolute paths of the directories for updog to serve up 
+# Delivery Toolkit 
+Within messing around with HTB machines I often need to serve up WinPEAS or LinPEAS , LinEnum, etc <br>
+to streamline this Delivery Toolkit will manage and serve up files, it will use the following methods
+- Python Updog http server 
+- Impacket SMB server 
+- SCP 
+- FTP 
+
+this project was formerly called UpdogManagement tool but since realising there is a much better way of <br> 
+programming this so over the next couple of weeks.
