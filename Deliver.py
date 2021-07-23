@@ -56,33 +56,61 @@ def OutputOpts(Message):
     print(f"{Color.NumColor}{Message}{Color.RESET}")
 
 
-# JSON Handling for manaaging paths
-with open("conf.json", "r") as f:
-    data = f.read()
+class Deliver():
+    'Different Methods of Transfering Files'
 
-# Loading JSON Data into variables
-data = json.loads(data)
-Paths = data["Paths"]
-Config = data["Default Configuration"]
+    def __init__(self,Paths,Config):
+        self.Paths = Paths
+        self.Config = Config
 
-# Print out all options and their keys 
-Notify.Info("Enter '!' followed by the path for a custom location")
-for _ in enumerate(Paths):
-    c = _[0]
-    _ = _[1]
-    OutputOpts(f"[{c}] : {_} -> {Paths[_]}")
+    def UpdogManagement(self,Location):
+        'Uses Updog to server files allowing for PS, Curl and WGET alongside manual transfer'
+        os.system(f"updog -d {Location} -p 80")
+
+    def ImpacketSMB(self):
+        'Allows for SMB to directly transfer'
+        print("Do Something")
+
+    def ManageLocation(self):
+        IndexHelperArr = {}
+        Notify.Info("Enter '!' followed by the path for a custom location")
+        for _ in enumerate(Paths):
+            c = _[0]
+            Name = _[1]
+            OutputOpts(f"[{c}] : {Name} -> {Paths[Name]}")
+            IndexHelperArr.update({c : Name})
+            
+        # Get the location of the Directory to serve up
+        try: 
+            Response = Notify.Question("Enter the name of the location you wish to serve up > ")
+            if Response.startswith("!"):
+                self.Location = Notify.Question("Enter Custom Path > ")
+            else:
+                self.Location = Paths[IndexHelperArr[int(Response)]]
+        except Exception as Exc:
+            Notify.Error(f"Encounter Error : `{Exc}`")
+
+    def ManageExecution(self)
+
+
+if __name__ == "__main__":
+    # Get Config File 
+    ConfigFile = os.getenv("HOME") + "/DeliveryManagement/conf.json" #! Alternatively use environment variables with the following syntax `os.getenv("ENV_VAR_NAME") `
     
+    # Get Values from Config File
+    with open(ConfigFile,"r") as f:
+        data = json.loads(f.read())
+    Paths = data["Paths"]
+    Config = data["Default Configuration"]
 
-# Get the location of the Directory to serve up
-try:
-    Response = Notify.Question("Enter the name of the location you wish to serve up > ")
-    if Response.startswith("!"):
-        Location = Notify.Question("Enter Custom Path > ")
-    else:
-        Location = Paths[Response]
-    
-except Exception as Err:
-    Notify.Error(f"Error : {Err} was found")
+    # Instantiate Deliver
+    D = Deliver(Paths,Config)
+    D.ManageLocation()
+    D.CheckSelf()
 
-# Serve files with updog
-os.system(f"updog -d {Location} -p 80")
+
+
+
+
+
+
