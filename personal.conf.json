@@ -1,15 +1,18 @@
 {
     "Paths": {
-        "PEASS" : "/opt/PrivEsc/PEASS/",
-        "Sherlock" : "/opt/PrivEsc/Sherlock/",
-	    "LinEnum" : "/opt/PrivEsc/LinEnum/",
-	    "Powerless" : "/opt/PrivEsc/Powerless/",
-	    "PowerSploit" : "/opt/PrivEsc/PowerSploit/",
-	    "Seatbelt" : "/opt/PrivEsc/Seatbelt/",
-	    "PrivescCheck" : "/opt/PrivEsc/PrivescCheck/",
-	    "WinEnum" : "/opt/PrivEsc/WinEnum/"
+        "PEASS": "/opt/PrivEsc/PEASS/",
+        "Sherlock": "/opt/PrivEsc/Sherlock/",
+        "LinEnum": "/opt/PrivEsc/LinEnum/",
+        "Powerless": "/opt/PrivEsc/Powerless/",
+        "PowerSploit": "/opt/PrivEsc/PowerSploit/",
+        "Seatbelt": "/opt/PrivEsc/Seatbelt/",
+        "PrivescCheck": "/opt/PrivEsc/PrivescCheck/",
+        "WinEnum": "/opt/PrivEsc/WinEnum/",
+        "Something": "C:\\Users\\Owner"
     },
+    "PortOverides": { "HTTP": null, "SMB": null },
+
     "Default Configuration": {
-        "AdminMode":"1"
+        "AdminMode": "1"
     }
 }

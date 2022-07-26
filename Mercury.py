@@ -1,7 +1,10 @@
 import json
-import os 
+import os
+import logging
+from impacket import smbserver, version
+from impacket.ntlm import compute_lmhash, compute_nthash
+from impacket.examples import logger as IMlogger
 
-# Written By NxtDaemon Any Issues or Additions you would like please contact me here https://nxtdaemon.xyz/contact
 #  __    __            __     _______
 # |  \  |  \          |  \   |       \
 # | ▓▓\ | ▓▓__    __ _| ▓▓_  | ▓▓▓▓▓▓▓\ ______   ______  ______ ____   ______  _______
@@ -31,6 +34,7 @@ class Color:
     SuccessColor = GREEN
     NumColor = BLUE+BOLD
 
+
 class Notify():
     'Managed what type of message is sent'
 
@@ -59,17 +63,28 @@ def OutputOpts(Message):
 class Deliver():
     'Different Methods of Transfering Files'
 
-    def __init__(self,Paths,Config):
+    def __init__(self, Paths, Config):
         self.Paths = Paths
         self.Config = Config
+        self.Location = False
+        self.Ports = {"HTTP": 80, "SMB": 443}  # ! Implement Overides
 
-    def UpdogManagement(self,Location):
+    def UpdogManagement(self):
         'Uses Updog to server files allowing for PS, Curl and WGET alongside manual transfer'
-        os.system(f"updog -d {Location} -p 80")
+        os.system(
+            f"python -m updog -d {self.Location} -p {self.Ports.get('HTTP')}")
+        var = input("RUNNING UPDOG SERVER > ")
 
     def ImpacketSMB(self):
         'Allows for SMB to directly transfer'
-        print("Do Something")
+        Comment = "PrivEsc Transfer SMB"
+        IMlogger.init(True)
+        logging.getLogger().setLevel(logging.DEBUG)
+        Server = smbserver.SimpleSMBServer(
+            listenAddress="0.0.0.0", listenPort=self.Ports.get('SMB'))
+        Server.addShare("MERCURY", self.Location, Comment)
+        Server.setSMB2Support(True)  # ! Unsure if a setting is needed
+        Server.start()
 
     def ManageLocation(self):
         IndexHelperArr = {}
@@ -78,39 +93,34 @@ class Deliver():
             c = _[0]
             Name = _[1]
             OutputOpts(f"[{c}] : {Name} -> {Paths[Name]}")
-            IndexHelperArr.update({c : Name})
-            
+            IndexHelperArr.update({c: Name})
+
         # Get the location of the Directory to serve up
-        try: 
-            Response = Notify.Question("Enter the name of the location you wish to serve up > ")
+        try:
+            Response = Notify.Question(
+                "Enter the name of the location you wish to serve up > ")
             if Response.startswith("!"):
-                self.Location = Notify.Question("Enter Custom Path > ")
+                self.Location = Response[1:].rstrip()
+                Notify.Info(f"Path Found as : {self.Location}")
             else:
                 self.Location = Paths[IndexHelperArr[int(Response)]]
         except Exception as Exc:
             Notify.Error(f"Encounter Error : `{Exc}`")
 
-    def ManageExecution(self)
-
 
 if __name__ == "__main__":
-    # Get Config File 
-    ConfigFile = os.getenv("HOME") + "/DeliveryManagement/conf.json" #! Alternatively use environment variables with the following syntax `os.getenv("ENV_VAR_NAME") `
-    
+    # Get Config File
+    # ! Alternatively use environment variables with the following syntax `os.getenv("ENV_VAR_NAME") `
+    # os.getenv("HOME") + "/DeliveryManagement/conf.json"
+    ConfigFile = "C:\\Users\\Owner\\DeliveryManagement\\personal.conf.json"
+
     # Get Values from Config File
-    with open(ConfigFile,"r") as f:
+    with open(ConfigFile, "r") as f:
         data = json.loads(f.read())
     Paths = data["Paths"]
     Config = data["Default Configuration"]
 
     # Instantiate Deliver
-    D = Deliver(Paths,Config)
+    D = Deliver(Paths, Config)
     D.ManageLocation()
-    D.CheckSelf()
-
-
-
-
-
-
-
+    D.UpdogManagement()
