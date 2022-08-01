@@ -1,9 +1,10 @@
 {
     "Paths": {
-        "Path1" : "/opt/xyz",
-        "Path2" : "/opt/yyy"
     },
+    "Config" : { 
+    "PortOverrides": { "HTTP": null, "SMB": null, "FTP": null, "RAW": null},
+
     "Default Configuration": {
-        "AdminMode":"1"
+        "AdminMode": "1"
     }
-}
+}}

@@ -11,7 +11,7 @@
         "Something": "C:\\Users\\Owner"
     },
     "Config" : { 
-    "PortOverrides": { "HTTP": null, "SMB": 4443, "FTP": null, "RAW": null},
+    "PortOverrides": { "HTTP": 8008, "SMB": 4443, "FTP": 2000, "RAW": null},
 
     "Default Configuration": {
         "AdminMode": "1"

@@ -5,7 +5,6 @@ import logging, coloredlogs
 # * SMB Dependencies - Impacket 
 from impacket import smbserver, version
 from impacket.ntlm import compute_lmhash, compute_nthash
-from impacket.examples import logger as IMlogger
 # * FTP Dependencies - pyftpdlib 
 from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
@@ -78,7 +77,7 @@ class Deliver():
         self.Paths = Paths
         self.Config = Config
         self.Location = False
-        self.Ports = {"HTTP": 80, "SMB": 443, "FTP" : 21, "RAW" : 5555}  # ! Implement Overrides
+        self.Ports = {"HTTP": 80, "SMB": 443, "FTP" : 21, "RAW" : 5555}  
         self.ActionOverrides()
 
     def ActionOverrides(self):
@@ -90,19 +89,17 @@ class Deliver():
 
     def UpdogManagement(self):
         'Spawns an updog server to server HTTP or HTTPS Files allowing for PS, Curl and WGET alongside manual transfer'
-        os.system(
-            f"python -m updog -d {self.Location} -p {self.Ports.get('HTTP')}")
-        var = input("RUNNING UPDOG SERVER > ")
+        os.system(f"python -m updog -d {self.Location} -p {self.Ports.get('HTTP')}")
 
     def ImpacketSMB(self):
         'Spawns an Impacket SMB to directly transfer files via SMB protocol'
+        'Tip : Connect from linux using "smbclient" like "smbclient \\\\IP\\Mercury --port PORT -N"'
         Comment = "PrivEsc Transfer SMB"
-        IMlogger.init(True)
         logging.getLogger().setLevel(logging.DEBUG)
         Server = smbserver.SimpleSMBServer(
             listenAddress="0.0.0.0", listenPort=self.Ports.get('SMB'))
-        Server.addShare("MERCURY", self.Location, Comment)
-        Server.setSMB2Support(True)  # ! Unsure if a setting is needed
+        Server.addShare("Mercury", self.Location, Comment)
+        Server.setSMB2Support(True) 
         Server.start()
 
     def PyFTP(self):
@@ -144,28 +141,48 @@ class Deliver():
 
                     conn.sendall(Content.encode()) 
                     Notify.Info(f"Sending File Contents to {addr}")
-                    conn.close() # ! Adjustment needed to ensure content is fully sent before closing 
-        
+                    conn.shutdown(socket.SHUT_RDWR) # ! Possible Issue With Shutting down here, testing required 
+                    Notify.Info(f"Contents have been sent, Shuting down connection using SHUT_RDWR Flag.")
+
     def ManageLocation(self):
         IndexHelperArr = {}
         Notify.Info("Enter '!' followed by the path for a custom location")
-        for _ in enumerate(Paths):
-            c = _[0]
-            Name = _[1]
+        for c,Name in enumerate(Paths):
             OutputOpts(f"[{c}] : {Name} -> {Paths[Name]}")
             IndexHelperArr.update({c: Name})
 
         # Get the location of the Directory to serve up
-        try:
-            Response = Notify.Question(
-                "Enter the name of the location you wish to serve up > ")
-            if Response.startswith("!"):
-                self.Location = Response[1:].rstrip()
-                Notify.Info(f"Path Found as : {self.Location}")
-            else:
-                self.Location = Paths[IndexHelperArr[int(Response)]]
-        except Exception as Exc:
-            Notify.Error(f"Encounter Error : `{Exc}`")
+        while not self.Location:
+            try:
+                Response = Notify.Question(
+                    "Enter the name of the location you wish to serve up > ")
+                if Response.startswith("!"):
+                    self.Location = Response[1:].rstrip()
+                    Notify.Info(f"Path Found as : {self.Location}")
+                else:
+                    self.Location = Paths[IndexHelperArr[int(Response)]]
+            except Exception as Exc:
+                Notify.Error(f"Encounter Error : `{Exc}`")
+
+        Notify.Info(f"{self.Location} Has Been Selected")
+
+    def ManageMethod(self):
+        Methods = {1 : "Updog", 2 : "Impacket SMB", 3 : "FTP Server", 4 : "Raw Socket"}
+        NameToMethod = {"Updog" : self.UpdogManagement, "Impacket SMB" : self.ImpacketSMB, "FTP Server" : self.PyFTP, "Raw Socket" : self.RawSocket }
+        Method = None
+
+        for x,y in Methods.items():
+            print(f"[{x}] - {y}")
+
+
+        while not Method:
+            try:
+                Method = int(Notify.Question("Enter the digit of the method you wish to use > "))
+                assert Method in range(0,5)
+            except:
+                Notify.Error("Number Given was not in range 1,2,3,4")
+
+        NameToMethod[Methods[Method]]()
 
 
 if __name__ == "__main__":
@@ -189,4 +206,4 @@ if __name__ == "__main__":
     # Instantiate Deliver
     D = Deliver(Paths, Config)
     D.ManageLocation()
-    D.RawSocket()
+    D.ManageMethod()
