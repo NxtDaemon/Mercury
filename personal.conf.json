@@ -10,9 +10,10 @@
         "WinEnum": "/opt/PrivEsc/WinEnum/",
         "Something": "C:\\Users\\Owner"
     },
-    "PortOverides": { "HTTP": null, "SMB": null },
+    "Config" : { 
+    "PortOverrides": { "HTTP": null, "SMB": 4443, "FTP": null, "RAW": null},
 
     "Default Configuration": {
         "AdminMode": "1"
     }
-}
+}}

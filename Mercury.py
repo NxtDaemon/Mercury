@@ -78,16 +78,24 @@ class Deliver():
         self.Paths = Paths
         self.Config = Config
         self.Location = False
-        self.Ports = {"HTTP": 80, "SMB": 443, "FTP" : 21, "RAW" : 1025}  # ! Implement Overides
+        self.Ports = {"HTTP": 80, "SMB": 443, "FTP" : 21, "RAW" : 5555}  # ! Implement Overrides
+        self.ActionOverrides()
+
+    def ActionOverrides(self):
+        Overrides = self.Config["PortOverrides"]
+        for Protocol, Override in Overrides.items():
+            if Override:
+                self.Ports.update({Protocol : Override})
+
 
     def UpdogManagement(self):
-        'Uses Updog to server files allowing for PS, Curl and WGET alongside manual transfer'
+        'Spawns an updog server to server HTTP or HTTPS Files allowing for PS, Curl and WGET alongside manual transfer'
         os.system(
             f"python -m updog -d {self.Location} -p {self.Ports.get('HTTP')}")
         var = input("RUNNING UPDOG SERVER > ")
 
     def ImpacketSMB(self):
-        'Allows for SMB to directly transfer'
+        'Spawns an Impacket SMB to directly transfer files via SMB protocol'
         Comment = "PrivEsc Transfer SMB"
         IMlogger.init(True)
         logging.getLogger().setLevel(logging.DEBUG)
@@ -98,6 +106,7 @@ class Deliver():
         Server.start()
 
     def PyFTP(self):
+        'Spawns a FTP Server and creates user "Mercury" with password "password", additionally allows anonymous mode and spawn you in the set location'
         Authorizer = DummyAuthorizer() 
         Authorizer.add_user("Mercury", "password", self.Location, perm="elradfmw")
         Authorizer.add_anonymous(self.Location) # * Comment out this line if you want it to not use anonymous mode.
@@ -175,7 +184,7 @@ if __name__ == "__main__":
     with open(ConfigFile, "r") as f:
         data = json.loads(f.read())
     Paths = data["Paths"]
-    Config = data["Default Configuration"]
+    Config = data["Config"]
 
     # Instantiate Deliver
     D = Deliver(Paths, Config)
